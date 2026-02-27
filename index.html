@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRIEF2 — מחשבון תפקודים ניהוליים</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #F5F2ED;
+    color: #1A1714;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+
+  .header {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .header h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.3rem;
+    color: #1A5276;
+  }
+  .header p {
+    font-size: 0.85rem;
+    color: #8C8070;
+  }
+  .header .badge {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.8rem;
+    background: #FEF9E7;
+    color: #B7770D;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  /* Form selector */
+  .form-select {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-btn {
+    padding: 0.5rem 1.2rem;
+    border: 2px solid #D4CCB8;
+    border-radius: 10px;
+    background: white;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .form-btn.active {
+    background: #1A5276;
+    color: white;
+    border-color: #1A5276;
+  }
+
+  /* Child info */
+  .child-info {
+    background: white;
+    border: 1px solid #E8E2D9;
+    border-radius: 14px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .child-info label {
+    font-size: 0.72rem;
+    color: #8C8070;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .child-info input, .child-info select {
+    padding: 0.45rem 0.7rem;
+    border: 1px solid #E8E2D9;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    background: #F5F2ED;
+    outline: none;
+  }
+  .child-info input:focus, .child-info select:focus {
+    border-color: #1A5276;
+  }
+  .info-field { flex: 1; min-width: 120px; }
+
+  /* Index cards */
+  .index-section {
+    margin-bottom: 1rem;
+  }
+  .index-card {
+    background: white;
+    border: 1px solid #E8E2D9;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+  }
+  .index-header {
+    display: flex;
+    align-items: center;
+    padding: 0.85rem 1rem;
+    gap: 0.6rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .index-header:hover { background: rgba(0,0,0,0.015); }
+  .index-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .index-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    flex: 1;
+  }
+  .index-name-en {
+    font-size: 0.7rem;
+    color: #8C8070;
+    font-weight: 400;
+  }
+  .index-score {
+    font-size: 1.1rem;
+    font-weight: 700;
+    min-width: 40px;
+    text-align: center;
+  }
+  .index-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    text-transform: uppercase;
+  }
+
+  /* Scale rows inside cards */
+  .scales-list {
+    border-top: 1px solid #E8E2D9;
+    padding: 0.5rem 0;
+  }
+  .scale-row {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    gap: 0.6rem;
+  }
+  .scale-name {
+    flex: 1;
+    font-size: 0.82rem;
+  }
+  .scale-name-en {
+    font-size: 0.65rem;
+    color: #8C8070;
+  }
+  .scale-input {
+    width: 60px;
+    padding: 0.4rem;
+    border: 1.5px solid #E8E2D9;
+    border-radius: 8px;
+    text-align: center;
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: #F5F2ED;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .scale-input:focus {
+    border-color: #1A5276;
+    background: white;
+  }
+  .scale-tscore {
+    width: 45px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  /* Profile visualization */
+  .profile-section {
+    background: white;
+    border: 1px solid #E8E2D9;
+    border-radius: 14px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .profile-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .profile-bar-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    gap: 0.5rem;
+  }
+  .profile-label {
+    width: 120px;
+    font-size: 0.72rem;
+    text-align: left;
+    flex-shrink: 0;
+  }
+  .profile-bar-bg {
+    flex: 1;
+    height: 22px;
+    background: #F0EDE8;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-bar {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.4s ease;
+    min-width: 2px;
+  }
+  .profile-bar-value {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #333;
+  }
+  /* Zone lines */
+  .zone-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1.5px;
+    z-index: 2;
+  }
+  .zone-label {
+    position: absolute;
+    top: -14px;
+    font-size: 0.5rem;
+    color: #8C8070;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.68rem;
+    color: #8C8070;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  /* Calculate button */
+  .calc-btn {
+    display: block;
+    width: 100%;
+    padding: 0.85rem;
+    background: #1A5276;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: opacity 0.15s;
+  }
+  .calc-btn:hover { opacity: 0.9; }
+
+  /* Summary */
+  .summary-card {
+    background: white;
+    border: 1px solid #E8E2D9;
+    border-radius: 14px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .summary-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+  }
+  .summary-text {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #444;
+  }
+  .summary-text strong { color: #1A1714; }
+
+  .footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.7rem;
+    color: #C4BAA8;
+  }
+
+  /* Color coding for severity */
+  .level-normal { color: #2E7D5E; }
+  .level-mild { color: #B7770D; }
+  .level-clinical { color: #D35400; }
+  .level-significant { color: #C0392B; }
+
+  .bg-normal { background: #2E7D5E; }
+  .bg-mild { background: #B7770D; }
+  .bg-clinical { background: #D35400; }
+  .bg-significant { background: #C0392B; }
+
+  .badge-normal { background: #E8F5E9; color: #2E7D5E; }
+  .badge-mild { background: #FEF9E7; color: #B7770D; }
+  .badge-clinical { background: #FDEBD0; color: #D35400; }
+  .badge-significant { background: #FDE8E8; color: #C0392B; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>BRIEF2 — פרופיל תפקודים ניהוליים</h1>
+  <p>מחשבון ציוני T ופרופיל ויזואלי</p>
+  <div class="badge">אב-טיפוס — גרסת הדגמה</div>
+</div>
+
+<div class="form-select">
+  <button class="form-btn active" onclick="selectForm('parent')">טופס הורה</button>
+  <button class="form-btn" onclick="selectForm('teacher')">טופס מורה</button>
+  <button class="form-btn" onclick="selectForm('self')">דיווח עצמי</button>
+</div>
+
+<div class="child-info">
+  <div class="info-field">
+    <label>שם הילד/ה</label>
+    <input type="text" id="child-name" placeholder="שם">
+  </div>
+  <div class="info-field">
+    <label>גיל</label>
+    <input type="number" id="child-age" min="5" max="18" placeholder="5-18">
+  </div>
+  <div class="info-field">
+    <label>מגדר</label>
+    <select id="child-gender">
+      <option value="male">זכר</option>
+      <option value="female">נקבה</option>
+    </select>
+  </div>
+  <div class="info-field">
+    <label>תאריך מילוי</label>
+    <input type="date" id="fill-date">
+  </div>
+</div>
+
+<div class="index-section" id="scales-container"></div>
+
+<button class="calc-btn" onclick="calculate()">חשב ציוני T ← </button>
+
+<div id="results" style="display:none">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#2E7D5E"></div>תקין (מתחת ל-60)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#B7770D"></div>גבוה מעט (60-64)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#D35400"></div>משמעותי קלינית (65-69)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#C0392B"></div>ליקוי משמעותי (70+)</div>
+  </div>
+
+  <div class="profile-section">
+    <div class="profile-title">פרופיל ויזואלי</div>
+    <div id="profile-bars"></div>
+  </div>
+
+  <div class="summary-card">
+    <div class="summary-title">סיכום ממצאים</div>
+    <div class="summary-text" id="summary-text"></div>
+  </div>
+</div>
+
+<div class="footer">
+  אב-טיפוס בלבד — אינו מחליף שיקול דעת קליני מקצועי<br>
+  BRIEF2 © PAR, Inc.
+</div>
+
+<script>
+const SCALES = [
+  {
+    index: 'BRI',
+    indexHe: 'מדד ויסות התנהגותי',
+    indexEn: 'Behavior Regulation Index',
+    color: '#C0392B',
+    scales: [
+      { id: 'inhibit', he: 'עיכוב', en: 'Inhibit' },
+      { id: 'selfmonitor', he: 'ניטור עצמי', en: 'Self-Monitor' },
+    ]
+  },
+  {
+    index: 'ERI',
+    indexHe: 'מדד ויסות רגשי',
+    indexEn: 'Emotion Regulation Index',
+    color: '#8E44AD',
+    scales: [
+      { id: 'shift', he: 'גמישות', en: 'Shift' },
+      { id: 'emotional', he: 'שליטה רגשית', en: 'Emotional Control' },
+    ]
+  },
+  {
+    index: 'CRI',
+    indexHe: 'מדד ויסות קוגניטיבי',
+    indexEn: 'Cognitive Regulation Index',
+    color: '#1A5276',
+    scales: [
+      { id: 'initiate', he: 'יזום', en: 'Initiate' },
+      { id: 'wm', he: 'זיכרון עבודה', en: 'Working Memory' },
+      { id: 'planorg', he: 'תכנון וארגון', en: 'Plan/Organize' },
+      { id: 'taskmon', he: 'ניטור משימה', en: 'Task-Monitor' },
+      { id: 'orgmat', he: 'ארגון חומרים', en: 'Org. of Materials' },
+    ]
+  }
+];
+
+function buildScales() {
+  const container = document.getElementById('scales-container');
+  let html = '';
+
+  SCALES.forEach(group => {
+    html += `<div class="index-card">
+      <div class="index-header" style="border-right: 4px solid ${group.color}">
+        <div class="index-dot" style="background:${group.color}"></div>
+        <div class="index-name">
+          ${group.indexHe}
+          <div class="index-name-en">${group.indexEn} (${group.index})</div>
+        </div>
+        <div class="index-score" id="score-${group.index}" style="color:${group.color}">—</div>
+      </div>
+      <div class="scales-list">
+        ${group.scales.map(s => `
+          <div class="scale-row">
+            <div class="scale-name">
+              ${s.he}
+              <div class="scale-name-en">${s.en}</div>
+            </div>
+            <input class="scale-input" type="number" id="raw-${s.id}"
+              placeholder="ציון גולמי" min="0" oninput="onInput()">
+            <div class="scale-tscore" id="t-${s.id}">—</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  });
+
+  // GEC
+  html += `<div class="index-card">
+    <div class="index-header" style="border-right: 4px solid #1A1714">
+      <div class="index-dot" style="background:#1A1714"></div>
+      <div class="index-name">
+        ציון כללי מרוכב
+        <div class="index-name-en">Global Executive Composite (GEC)</div>
+      </div>
+      <div class="index-score" id="score-GEC" style="color:#1A1714">—</div>
+    </div>
+  </div>`;
+
+  container.innerHTML = html;
+}
+
+// Demo T-score conversion (simplified for prototype)
+// In production this would use actual normative tables
+function rawToT(raw) {
+  if (raw === null || raw === undefined || raw === '') return null;
+  // Simplified demo conversion — NOT real norms
+  // Just for demonstration purposes
+  const t = Math.round(40 + (raw * 1.8));
+  return Math.min(Math.max(t, 30), 100);
+}
+
+function getLevel(t) {
+  if (t === null) return { label: '—', labelHe: '—', class: '' };
+  if (t < 60) return { label: 'normal', labelHe: 'תקין', class: 'normal' };
+  if (t < 65) return { label: 'mild', labelHe: 'גבוה מעט', class: 'mild' };
+  if (t < 70) return { label: 'clinical', labelHe: 'משמעותי קלינית', class: 'clinical' };
+  return { label: 'significant', labelHe: 'ליקוי משמעותי', class: 'significant' };
+}
+
+function onInput() {
+  // Clear results when input changes
+}
+
+function calculate() {
+  const allT = {};
+  let allValid = true;
+
+  // Calculate T-scores for each scale
+  SCALES.forEach(group => {
+    let groupSum = 0;
+    let groupCount = 0;
+
+    group.scales.forEach(s => {
+      const raw = document.getElementById(`raw-${s.id}`).value;
+      if (raw === '') {
+        allValid = false;
+        document.getElementById(`t-${s.id}`).textContent = '—';
+        document.getElementById(`t-${s.id}`).className = 'scale-tscore';
+        return;
+      }
+      const t = rawToT(parseFloat(raw));
+      allT[s.id] = t;
+      const level = getLevel(t);
+      const el = document.getElementById(`t-${s.id}`);
+      el.textContent = t;
+      el.className = `scale-tscore level-${level.class}`;
+      groupSum += t;
+      groupCount++;
+    });
+
+    // Index score (average of scales)
+    const indexEl = document.getElementById(`score-${group.index}`);
+    if (groupCount > 0) {
+      const indexT = Math.round(groupSum / groupCount);
+      allT[group.index] = indexT;
+      indexEl.textContent = indexT;
+    } else {
+      indexEl.textContent = '—';
+    }
+  });
+
+  // GEC (average of all)
+  const allScaleTs = Object.values(allT).filter(v => v !== null && v !== undefined);
+  const gecEl = document.getElementById('score-GEC');
+  let gecScore = null;
+  if (allScaleTs.length > 0) {
+    gecScore = Math.round(allScaleTs.reduce((a,b) => a+b, 0) / allScaleTs.length);
+    allT['GEC'] = gecScore;
+    gecEl.textContent = gecScore;
+  }
+
+  // Show results
+  document.getElementById('results').style.display = 'block';
+
+  // Build profile bars
+  buildProfile(allT);
+
+  // Build summary
+  buildSummary(allT);
+
+  // Scroll to results
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+function buildProfile(allT) {
+  const bars = document.getElementById('profile-bars');
+  const items = [];
+
+  SCALES.forEach(group => {
+    group.scales.forEach(s => {
+      if (allT[s.id]) {
+        items.push({ id: s.id, he: s.he, en: s.en, t: allT[s.id], color: group.color });
+      }
+    });
+  });
+
+  // Add indices
+  SCALES.forEach(group => {
+    if (allT[group.index]) {
+      items.push({ id: group.index, he: group.indexHe, en: group.index, t: allT[group.index], color: group.color, isIndex: true });
+    }
+  });
+  if (allT['GEC']) {
+    items.push({ id: 'GEC', he: 'ציון כללי', en: 'GEC', t: allT['GEC'], color: '#1A1714', isIndex: true });
+  }
+
+  let html = '';
+  items.forEach(item => {
+    const level = getLevel(item.t);
+    const barColor = level.class === 'normal' ? '#2E7D5E' :
+                     level.class === 'mild' ? '#B7770D' :
+                     level.class === 'clinical' ? '#D35400' : '#C0392B';
+    // Scale: T-score 30-100 maps to 0-100% width
+    const pct = Math.max(0, Math.min(100, ((item.t - 30) / 70) * 100));
+    const line60 = ((60 - 30) / 70) * 100;
+    const line65 = ((65 - 30) / 70) * 100;
+    const line70 = ((70 - 30) / 70) * 100;
+
+    const fontWeight = item.isIndex ? '700' : '400';
+    const fontSize = item.isIndex ? '0.78rem' : '0.72rem';
+
+    html += `<div class="profile-bar-row" style="${item.isIndex ? 'margin-top:0.3rem;margin-bottom:0.3rem;' : ''}">
+      <div class="profile-label" style="font-weight:${fontWeight};font-size:${fontSize}">
+        ${item.he}<br><span style="color:#8C8070;font-size:0.6rem">${item.en}</span>
+      </div>
+      <div class="profile-bar-bg">
+        <div class="profile-bar" style="width:${pct}%;background:${barColor}"></div>
+        <div class="zone-line" style="right:${line60}%;background:rgba(183,119,13,0.3)"></div>
+        <div class="zone-line" style="right:${line65}%;background:rgba(211,84,0,0.3)"></div>
+        <div class="zone-line" style="right:${line70}%;background:rgba(192,57,43,0.4)"></div>
+      </div>
+      <div style="min-width:30px;text-align:center;font-weight:700;font-size:0.82rem;color:${barColor}">${item.t}</div>
+    </div>`;
+  });
+
+  bars.innerHTML = html;
+}
+
+function buildSummary(allT) {
+  const el = document.getElementById('summary-text');
+  const name = document.getElementById('child-name').value || 'הילד/ה';
+  const age = document.getElementById('child-age').value;
+
+  let lines = [];
+
+  if (age) {
+    lines.push(`<strong>${name}</strong>, בן/בת ${age}.`);
+  }
+
+  // Check each index
+  SCALES.forEach(group => {
+    if (allT[group.index]) {
+      const level = getLevel(allT[group.index]);
+      const elevated = group.scales.filter(s => allT[s.id] && allT[s.id] >= 65);
+
+      if (allT[group.index] >= 65) {
+        lines.push(`<strong>${group.indexHe}</strong> (${group.index}): ציון T = <span class="level-${level.class}">${allT[group.index]} — ${level.labelHe}</span>.`);
+        if (elevated.length > 0) {
+          lines.push(`סולמות מוגברים: ${elevated.map(s => `${s.he} (${allT[s.id]})`).join(', ')}.`);
+        }
+      } else if (allT[group.index] >= 60) {
+        lines.push(`<strong>${group.indexHe}</strong> (${group.index}): ציון T = <span class="level-${level.class}">${allT[group.index]} — ${level.labelHe}</span>.`);
+      } else {
+        lines.push(`<strong>${group.indexHe}</strong> (${group.index}): ציון T = <span class="level-normal">${allT[group.index]} — תקין</span>.`);
+      }
+    }
+  });
+
+  if (allT['GEC']) {
+    const gecLevel = getLevel(allT['GEC']);
+    lines.push(`<br><strong>ציון כללי מרוכב (GEC): <span class="level-${gecLevel.class}">${allT['GEC']} — ${gecLevel.labelHe}</span></strong>`);
+  }
+
+  el.innerHTML = lines.join('<br>');
+}
+
+function selectForm(type) {
+  document.querySelectorAll('.form-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  // In full version, this would change normative tables
+}
+
+// Init
+buildScales();
+document.getElementById('fill-date').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
